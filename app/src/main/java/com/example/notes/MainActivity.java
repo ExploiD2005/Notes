@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewNotes;
-    public static final ArrayList<Note> notes = new ArrayList<>();
+    private final ArrayList<Note> notes = new ArrayList<>();
     NotesAdapter adapter = new NotesAdapter(notes);
     private NotesDBHelper dbHelper;
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
         dbHelper = new NotesDBHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        if (notes.isEmpty()) {
+        /*if (notes.isEmpty()) {
             notes.add(new Note("Парикмахер", "Сделать прическу", "Понедельник", 2));
             notes.add(new Note("Баскетбол", "Игра со школьной командой", "Вторник", 3));
             notes.add(new Note("Магазин", "Купить новые джинсы", "Понедельник", 3));
@@ -47,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
             contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, note.getDayOfWeek());
             contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, note.getPriority());
             database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
-        }
-        ArrayList<Note> notesFromDB = new ArrayList<>();
+        }*/
         Cursor cursor = database.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
             String title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE));
@@ -56,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
             String dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK));
             int priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY));
             Note note = new Note(title, description, dayOfWeek, priority);
-            notesFromDB.add(note);
+            notes.add(note);
         }
-        adapter = new NotesAdapter(notesFromDB);
+        cursor.close();
+        adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this));
         //recyclerViewNotes.setLayoutManager(new GridLayoutManager(this, 3));
         //recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
