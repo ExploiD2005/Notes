@@ -21,8 +21,9 @@ public class AddNoteActivity extends AppCompatActivity {
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
 
-    private NotesDBHelper dbHelper;
-    private SQLiteDatabase database;
+    private NotesDatabase database;
+   /* private NotesDBHelper dbHelper;
+    private SQLiteDatabase database;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,9 @@ public class AddNoteActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        dbHelper = new NotesDBHelper(this);
-        database = dbHelper.getWritableDatabase();
+        database = NotesDatabase.getInstance(this);
+        /*dbHelper = new NotesDBHelper(this);
+        database = dbHelper.getWritableDatabase();*/
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextDescription = findViewById(R.id.editTextDescription);
         spinnerDaysOfWeek = findViewById(R.id.spinnerDayOfWeek);
@@ -48,19 +50,27 @@ public class AddNoteActivity extends AppCompatActivity {
         RadioButton radioButton = findViewById(radioButtonId);
         int priority = Integer.parseInt(radioButton.getText().toString());
         if (isFilled(title, description)) {
+            Note note = new Note(title, description, dayOfWeek, priority);
+            database.notesDao().insertNote(note);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, getString(R.string.warning_fill_field), Toast.LENGTH_SHORT).show();
+        }
+        /*if (isFilled(title, description)) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title);
             contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
             contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek + 1);
             contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
-            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
+            //database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
             //Note note = new Note(title, description, dayOfWeek, priority);
             //MainActivity.notes.add(note);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
             Toast.makeText(this, getString(R.string.warning_fill_field), Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
     }
     private boolean isFilled(String title, String description) {
