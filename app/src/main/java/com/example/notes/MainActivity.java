@@ -1,8 +1,13 @@
 package com.example.notes;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,10 +28,11 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();
-    NotesAdapter adapter = new NotesAdapter(notes);
+    private NotesAdapter adapter;// = new NotesAdapter(notes);
     /*private NotesDBHelper dbHelper;
     private SQLiteDatabase database;*/
-    private NotesDatabase database;
+    //private NotesDatabase database;
+    MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
-        database = NotesDatabase.getInstance(this);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        //database = NotesDatabase.getInstance(this);
         /*dbHelper = new NotesDBHelper(this);
         database = dbHelper.getWritableDatabase();*/
         /*if (notes.isEmpty()) {
@@ -98,10 +105,9 @@ public class MainActivity extends AppCompatActivity {
         String[] whereArgs = new String[]{Integer.toString(id)};
         database.delete(NotesContract.NotesEntry.TABLE_NAME, where, whereArgs);
         getData();*/
-        Note note = notes.get(position);
-        database.notesDao().deleteNote(note);
-        getData();
-        adapter.notifyDataSetChanged();
+        Note note = adapter.getNotes().remove(position);
+        viewModel.deleteNote(note);
+        //database.notesDao().deleteNote(note);
     }
 
     public void onClickAddNote(View view){
@@ -133,8 +139,16 @@ public class MainActivity extends AppCompatActivity {
         cursor.close();
     }*/
     private void getData() {
-        List<Note> notesFromDB = database.notesDao().getAllNotes();
-        notes.clear();
-        notes.addAll(notesFromDB);
+        LiveData<List<Note>> notesFromDB = viewModel.getNotes();
+        notesFromDB.observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notesFromLiveData) {
+                //notes.clear();
+                //notes.addAll(notesFromLiveData);
+                //adapter.notifyDataSetChanged();
+                adapter.setNotes(notesFromLiveData);
+            }
+        });
+
     }
 }

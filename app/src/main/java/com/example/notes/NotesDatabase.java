@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = (Note.class), version = 1, exportSchema = false)
+@Database(entities = {Note.class}, version = 1, exportSchema = false)
 public abstract class NotesDatabase extends RoomDatabase {
     private static NotesDatabase database;
     private static final String DB_NAME = "notes2.db";
@@ -16,7 +16,7 @@ public abstract class NotesDatabase extends RoomDatabase {
         synchronized (LOCK) {
             if (database == null) {
                 database = Room.databaseBuilder(context, NotesDatabase.class, DB_NAME)
-                        .allowMainThreadQueries()
+                        //.allowMainThreadQueries()
                         .build();
             }
         }

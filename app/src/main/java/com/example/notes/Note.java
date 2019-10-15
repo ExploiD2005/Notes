@@ -71,22 +71,5 @@ public class Note {
         this.priority = priority;
     }
 
-    public static String getDayAsString(int position) {
-        switch (position) {
-            case 1:
-                return "Понедельник";
-            case 2:
-                return "Вторник";
-            case 3:
-                return "Среда";
-            case 4:
-                return "Черверг";
-            case 5:
-                return "Пятница";
-            case 6:
-                return "Суббота";
-            default:
-                return "Воскресенье";
-        }
-    }
+
 }

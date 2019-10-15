@@ -2,6 +2,8 @@ package com.example.notes;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -21,7 +23,8 @@ public class AddNoteActivity extends AppCompatActivity {
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
 
-    private NotesDatabase database;
+    private MainViewModel viewModel;
+    //private NotesDatabase database;
    /* private NotesDBHelper dbHelper;
     private SQLiteDatabase database;*/
 
@@ -33,7 +36,8 @@ public class AddNoteActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        database = NotesDatabase.getInstance(this);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        //database = NotesDatabase.getInstance(this);
         /*dbHelper = new NotesDBHelper(this);
         database = dbHelper.getWritableDatabase();*/
         editTextTitle = findViewById(R.id.editTextTitle);
@@ -51,7 +55,8 @@ public class AddNoteActivity extends AppCompatActivity {
         int priority = Integer.parseInt(radioButton.getText().toString());
         if (isFilled(title, description)) {
             Note note = new Note(title, description, dayOfWeek, priority);
-            database.notesDao().insertNote(note);
+            viewModel.insertNote(note);
+            //database.notesDao().insertNote(note);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
